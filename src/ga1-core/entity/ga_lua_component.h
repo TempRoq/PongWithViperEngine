@@ -25,6 +25,10 @@ public:
 private:
 	static int lua_frame_params_get_input_left(struct lua_State* state);
 	static int lua_frame_params_get_input_right(struct lua_State* state);
+	static int lua_frame_params_get_input_up_R(struct lua_State* state);
+	static int lua_frame_params_get_input_up_L(struct lua_State* state);
+	static int lua_frame_params_get_input_down_R(struct lua_State* state);
+	static int lua_frame_params_get_input_down_L(struct lua_State* state);
 	static int lua_component_get_entity(struct lua_State* state);
 	static int lua_entity_translate(struct lua_State* state);
 

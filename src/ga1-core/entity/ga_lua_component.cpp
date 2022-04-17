@@ -68,6 +68,34 @@ int ga_lua_component::lua_frame_params_get_input_right(lua_State* state)
 	return 1;
 }
 
+int ga_lua_component::lua_frame_params_get_input_up_R(lua_State* state)
+{
+	int arg_count = lua_gettop(state);
+
+	return 1;
+}
+
+int ga_lua_component::lua_frame_params_get_input_up_L(lua_State* state)
+{
+	int arg_count = lua_gettop(state);
+
+	return 1;
+}
+
+int ga_lua_component::lua_frame_params_get_input_down_R(lua_State* state)
+{
+	int arg_count = lua_gettop(state);
+
+	return 1;
+}
+
+int ga_lua_component::lua_frame_params_get_input_down_L(lua_State* state)
+{
+	int arg_count = lua_gettop(state);
+
+	return 1;
+}
+
 int ga_lua_component::lua_component_get_entity(lua_State* state)
 {
 	int arg_count = lua_gettop(state);
