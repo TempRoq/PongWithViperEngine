@@ -22,6 +22,11 @@
 
 #include "gui/ga_font.h"
 
+#include "physics/ga_physics_component.h"
+#include "physics/ga_physics_world.h"
+#include "physics/ga_rigid_body.h"
+#include "physics/ga_shape.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -44,28 +49,50 @@ int main(int argc, const char** argv)
 	// Create objects for three phases of the frame: input, sim and output.
 	ga_input* input = new ga_input();
 	ga_sim* sim = new ga_sim();
+	ga_physics_world* world = new ga_physics_world();
 	ga_output* output = new ga_output(input->get_window());
 
 	// Create the default font:
 	g_font = new ga_font("VeraMono.ttf", 16.0f, 512, 512);
 
 	// Create camera.
-	ga_camera* camera = new ga_camera({ 0.0f, 7.0f, 20.0f });
+	ga_camera* camera = new ga_camera({ 0.0f, 0.0f, 20.0f });
 	ga_quatf rotation;
 	rotation.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(180.0f));
 	camera->rotate(rotation);
-	rotation.make_axis_angle(ga_vec3f::x_vector(), ga_degrees_to_radians(15.0f));
-	camera->rotate(rotation);
+	//rotation.make_axis_angle(ga_vec3f::x_vector(), ga_degrees_to_radians(15.0f));
+	//camera->rotate(rotation);
 
 	// Create an entity whose movement is driven by Lua script.
+	//Right Paddle entity
 	ga_entity rPaddle;
-	rPaddle.translate({ 0.0f, 2.0f, 1.0f });
-	ga_lua_component lua_move(&rPaddle, "data/scripts/move.lua");
-	ga_cube_component lua_model(&rPaddle, "data/textures/rpi.png");
+	rPaddle.translate({ 20.0f, 0.0f, 0.0f });
+	ga_lua_component lua_move_r(&rPaddle, "data/scripts/movePaddleR.lua");
+	ga_cube_component model_r(&rPaddle, "data/textures/rpi.png");
 	ga_mat4f tempscale = rPaddle.get_transform();
-	tempscale.nonuniform_scale({ 1.0f, 3.0f, 1.0f });
+	tempscale.nonuniform_scale({ 0.5f, 5.0f, 0.5f });
 	rPaddle.set_transform(tempscale);
 	sim->add_entity(&rPaddle);
+
+	//Left Paddle entity
+	ga_entity lPaddle;
+	lPaddle.translate({ -20.0f, 0.0f, 0.0f });
+	ga_lua_component lua_move_l(&lPaddle, "data/scripts/movePaddleL.lua");
+	ga_cube_component model_l(&lPaddle, "data/textures/rpi.png");
+	ga_mat4f tempscale2 = lPaddle.get_transform();
+	tempscale2.nonuniform_scale({ 0.5f, 5.0f, 0.5f });
+	lPaddle.set_transform(tempscale2);
+	sim->add_entity(&lPaddle);
+
+	//floor collider
+	ga_entity floor;
+	ga_plane floor_plane;
+	floor_plane._point = { 0.0f, 0.0f, 0.0f };
+	floor_plane._normal = { 0.0f, 1.0f, 0.0f };
+	ga_physics_component floor_collider(&floor, &floor_plane, 0.0f);
+	floor_collider.get_rigid_body()->make_static();
+	world->add_rigid_body(floor_collider.get_rigid_body());
+	sim->add_entity(&floor);
 
 	// Main loop:
 	while (true)
@@ -85,12 +112,17 @@ int main(int argc, const char** argv)
 		// Run gameplay.
 		sim->update(&params);
 
+		// Step the physics world.
+		world->step(&params);
+
 		// Perform the late update.
 		sim->late_update(&params);
 
 		// Draw to screen.
 		output->update(&params);
 	}
+
+	world->remove_rigid_body(floor_collider.get_rigid_body());
 
 	delete output;
 	delete sim;
