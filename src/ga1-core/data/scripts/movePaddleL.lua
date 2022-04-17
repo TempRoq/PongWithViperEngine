@@ -7,7 +7,4 @@ function update (component, frame_params)
 		entity = component_get_entity(component)
 		entity_translate(entity, 0.0, -1.0, 0.0)
 	end
-
-
-	if frame_params_get_input_
 end
