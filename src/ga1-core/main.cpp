@@ -58,11 +58,14 @@ int main(int argc, const char** argv)
 	camera->rotate(rotation);
 
 	// Create an entity whose movement is driven by Lua script.
-	ga_entity lua;
-	lua.translate({ 0.0f, 2.0f, 1.0f });
-	ga_lua_component lua_move(&lua, "data/scripts/move.lua");
-	ga_cube_component lua_model(&lua, "data/textures/rpi.png");
-	sim->add_entity(&lua);
+	ga_entity rPaddle;
+	rPaddle.translate({ 0.0f, 2.0f, 1.0f });
+	ga_lua_component lua_move(&rPaddle, "data/scripts/move.lua");
+	ga_cube_component lua_model(&rPaddle, "data/textures/rpi.png");
+	ga_mat4f tempscale = rPaddle.get_transform();
+	tempscale.nonuniform_scale({ 1.0f, 3.0f, 1.0f });
+	rPaddle.set_transform(tempscale);
+	sim->add_entity(&rPaddle);
 
 	// Main loop:
 	while (true)

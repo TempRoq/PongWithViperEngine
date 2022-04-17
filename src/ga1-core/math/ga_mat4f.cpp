@@ -44,6 +44,16 @@ void ga_mat4f::make_scaling(float s)
 	data[3][3] = 1.0f;
 }
 
+void ga_mat4f::make_nonuniform_scaling(const ga_vec3f& __restrict s)
+{
+	make_identity();
+	for (int i = 0; i < 3; ++i)
+	{
+		data[i][i] = s.axes[i];
+	}
+	data[3][3] = 1.0f;
+}
+
 void ga_mat4f::make_rotation(const ga_quatf& __restrict q)
 {
 	make_identity();
@@ -71,6 +81,13 @@ void ga_mat4f::scale(float s)
 {
 	ga_mat4f tmp;
 	tmp.make_scaling(s);
+	(*this) *= tmp;
+}
+
+void ga_mat4f::nonuniform_scale(const ga_vec3f& __restrict t)
+{
+	ga_mat4f tmp;
+	tmp.make_nonuniform_scaling(t);
 	(*this) *= tmp;
 }
 

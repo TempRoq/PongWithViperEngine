@@ -23,7 +23,7 @@ ga_camera::~ga_camera()
 
 void ga_camera::update(ga_frame_params* params)
 {
-	const float k_move_speed = 0.1f;
+	/*const float k_move_speed = 0.1f;
 	const float k_rotate_speed = 0.5f;
 
 	// Use WASD to control the position.
@@ -60,7 +60,7 @@ void ga_camera::update(ga_frame_params* params)
 	rotation_axis_angle.make_axis_angle(ga_vec3f::x_vector(), pitch);
 	rotation_matrix.rotate(rotation_axis_angle);
 	_transform = rotation_matrix * _transform;
-
+*/
 	ga_vec3f eye = _transform.get_translation();
 	ga_vec3f at = eye + _transform.get_forward();
 	ga_vec3f up = ga_vec3f::y_vector();

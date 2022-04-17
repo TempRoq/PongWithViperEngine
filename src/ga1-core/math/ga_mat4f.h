@@ -34,6 +34,7 @@ struct ga_mat4f
 	** Build a uniform scaling matrix.
 	*/
 	void make_scaling(float s);
+	void make_nonuniform_scaling(const ga_vec3f& __restrict s);
 
 	/*
 	** Build a rotation matrix.
@@ -49,6 +50,7 @@ struct ga_mat4f
 	** Apply uniform scaling to the given matrix.
 	*/
 	void scale(float s);
+	void ga_mat4f::nonuniform_scale(const ga_vec3f& __restrict t);
 
 	/*
 	** Apply rotation to the given matrix.
