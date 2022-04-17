@@ -71,13 +71,16 @@ int ga_lua_component::lua_frame_params_get_input_right(lua_State* state)
 int ga_lua_component::lua_frame_params_get_input_up_R(lua_State* state)
 {
 	int arg_count = lua_gettop(state);
-
+	ga_frame_params* params = (ga_frame_params*)lua_touserdata(state, 1);
+	lua_pushboolean(state, (params->_button_mask & k_button_i) != 0);
 	return 1;
 }
 
 int ga_lua_component::lua_frame_params_get_input_up_L(lua_State* state)
 {
 	int arg_count = lua_gettop(state);
+	ga_frame_params* params = (ga_frame_params*)lua_touserdata(state, 1);
+	lua_pushboolean(state, (params->_button_mask & k_button_w) != 0);
 
 	return 1;
 }
@@ -85,6 +88,8 @@ int ga_lua_component::lua_frame_params_get_input_up_L(lua_State* state)
 int ga_lua_component::lua_frame_params_get_input_down_R(lua_State* state)
 {
 	int arg_count = lua_gettop(state);
+	ga_frame_params* params = (ga_frame_params*)lua_touserdata(state, 1);
+	lua_pushboolean(state, (params->_button_mask & k_button_k) != 0);
 
 	return 1;
 }
@@ -92,6 +97,8 @@ int ga_lua_component::lua_frame_params_get_input_down_R(lua_State* state)
 int ga_lua_component::lua_frame_params_get_input_down_L(lua_State* state)
 {
 	int arg_count = lua_gettop(state);
+	ga_frame_params* params = (ga_frame_params*)lua_touserdata(state, 1);
+	lua_pushboolean(state, (params->_button_mask & k_button_s) != 0);
 
 	return 1;
 }
