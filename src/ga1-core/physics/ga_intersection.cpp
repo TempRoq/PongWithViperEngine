@@ -351,6 +351,7 @@ ga_vec3f separating_axis_point_of_collision(const ga_oobb* oobb_a, const ga_oobb
 
 bool separating_axis_test(const ga_shape* a, const ga_mat4f& transform_a, const ga_shape* b, const ga_mat4f& transform_b, ga_collision_info* info)
 {
+	//From Viper
 	bool collision = true;
 	std::vector<ga_vec3f> axes;
 	ga_oobb oobb_a, oobb_b;
@@ -439,6 +440,153 @@ bool separating_axis_test(const ga_shape* a, const ga_mat4f& transform_a, const 
 	}
 
 	return collision;
+
+	//From HW
+	/*bool collision = true;
+	std::vector<ga_vec3f> axes;
+	ga_oobb oobb_a, oobb_b;
+
+	oobb_a = *reinterpret_cast<const ga_oobb*>(a);
+	oobb_a._center += transform_a.get_translation();
+	oobb_a._half_vectors[0] = transform_a.transform_vector(oobb_a._half_vectors[0]);
+	oobb_a._half_vectors[1] = transform_a.transform_vector(oobb_a._half_vectors[1]);
+	oobb_a._half_vectors[2] = transform_a.transform_vector(oobb_a._half_vectors[2]);
+
+	oobb_b = *reinterpret_cast<const ga_oobb*>(b);
+	oobb_b._center += transform_b.get_translation();
+	oobb_b._half_vectors[0] = transform_b.transform_vector(oobb_b._half_vectors[0]);
+	oobb_b._half_vectors[1] = transform_b.transform_vector(oobb_b._half_vectors[1]);
+	oobb_b._half_vectors[2] = transform_b.transform_vector(oobb_b._half_vectors[2]);
+
+	// start here
+	axes.push_back(oobb_a._half_vectors[0]);
+	axes.push_back(oobb_a._half_vectors[1]);
+	axes.push_back(oobb_a._half_vectors[2]);
+	axes.push_back(oobb_b._half_vectors[0]);
+	axes.push_back(oobb_b._half_vectors[1]);
+	axes.push_back(oobb_b._half_vectors[2]);
+
+	// The axes we need to check are the primary axes of each oriented box.
+
+	// axes.push_back( ... )
+
+
+	// We also need to check nine additional axes to cover corner-to-corner and edge-to-edge cases.
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			// axes.push_back( ... )
+			ga_vec3f temp = ga_vec3f_cross(oobb_a._half_vectors[i], oobb_b._half_vectors[j]);
+			if (temp.mag() <= 0.001f) {
+				continue;
+			}
+			else {
+				axes.push_back(temp);
+			}
+
+		}
+	}
+	// full set of axes
+
+	float min_penetration = FLT_MAX;
+	ga_vec3f min_penetration_axis;
+	uint32_t min_penetration_index = INT_MAX;
+
+	// TODO: Homework 5.
+	// First assemble all the axes to test for separation.
+	// Then, for each axis, project the two bounding boxes and check for overlap.
+	// To project a box onto the axis, sum the magnitudes of the projections of the half vectors.
+	// The center point of the project is the dot product of the box center with the axis.
+	// If there is any axis where there is no overlap, the objects are not colliding.
+
+	// The local variable 'collision' should be set true or false depending on whether the
+	// two boxes are interpenetrating.
+
+	std::vector<ga_vec3f> aCoords;
+	std::vector<ga_vec3f> bCoords;
+
+	oobb_a.get_corners(aCoords);
+	oobb_b.get_corners(bCoords);
+
+	// start solution
+	for (uint32_t i = 0; i < axes.size(); ++i)
+	{
+		ga_vec3f axis = axes[i];
+		//axis.normalize();
+
+		float aMin = aCoords[0].dot(axis);
+		float aMax = aCoords[0].dot(axis);
+		float bMin = bCoords[0].dot(axis);
+		float bMax = bCoords[0].dot(axis);
+
+		for (int j = 0; j < aCoords.size(); j++) {
+			float tempVal = axis.dot(aCoords[j]);
+			if (tempVal > aMax) { aMax = tempVal; }
+			if (tempVal < aMin) { aMin = tempVal; }
+		}
+
+		for (int j = 0; j < bCoords.size(); j++) {
+			float tempVal = axis.dot(bCoords[j]);
+			if (tempVal > bMax) { bMax = tempVal; }
+			if (tempVal < bMin) { bMin = tempVal; }
+		}
+
+		float col = 1.0f;
+		if (aMax < bMin) { col = 0.0f; }
+		else if (bMax < aMin) { col = 0.0f; }
+		else {
+			if (bMin > aMin) { col = aMax - bMin; }
+			else {
+				col = bMax - aMin;
+			}
+		}
+
+		if (col == 0.0f) {
+			collision = false;
+			return false;
+		}
+		else {
+			if (col < min_penetration)
+			{
+				min_penetration = col;
+				min_penetration_axis = axis;
+				min_penetration_index = i;
+			}
+		}
+
+		// Project the half vectors to get half the projected shape.
+		// We can use absolution value projection otherwise one projection may subtract from the half projection.
+
+
+		//  project here and get the min/max
+
+		// This is a separating axis if there is no overlap in the projections.
+		// There is no overlap if the minimum point of each projection does not fall between
+		// the max and min of the other projection.
+
+		// look for overlap
+
+		// if there's overlap, we can use that amount as the penetration...
+
+		// if there's no overlap, there's no collision
+
+		// but while we're at it, if there is, then keep track of the minimum penetrating axis and value.
+
+
+	}
+	// end solution
+
+
+	if (collision && min_penetration_index < INT_MAX)
+	{
+		// The normal of the collision is the axis of minimum penetration.
+		info->_normal = min_penetration_axis;
+		info->_penetration = min_penetration;
+		info->_point = separating_axis_point_of_collision(&oobb_a, &oobb_b, min_penetration_index);
+	}
+
+	return true;*/
 }
 
 ga_vec3f gjk_support(const ga_convex_hull* hull, const ga_vec3f& dir)

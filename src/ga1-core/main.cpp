@@ -18,6 +18,7 @@
 #include "entity/ga_lua_component.h"
 
 #include "graphics/ga_cube_component.h"
+#include "graphics/ga_ball_component.h"
 #include "graphics/ga_program.h"
 
 #include "gui/ga_font.h"
@@ -56,7 +57,7 @@ int main(int argc, const char** argv)
 	g_font = new ga_font("VeraMono.ttf", 16.0f, 512, 512);
 
 	// Create camera.
-	ga_camera* camera = new ga_camera({ 0.0f, 0.0f, 20.0f });
+	ga_camera* camera = new ga_camera({ 0.0f, 0.0f, 50.0f });
 	ga_quatf rotation;
 	rotation.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(180.0f));
 	camera->rotate(rotation);
@@ -66,28 +67,53 @@ int main(int argc, const char** argv)
 	// Create an entity whose movement is driven by Lua script.
 	//Right Paddle entity
 	ga_entity rPaddle;
-	
 	ga_lua_component lua_move_r(&rPaddle, "data/scripts/movePaddleR.lua");
 	ga_cube_component model_r(&rPaddle, "data/textures/rpi.png");
-	
-	rPaddle.translate({ 10.0f, 0.0f, 0.0f });
-
+	rPaddle.translate({ 12.0f, 0.0f, 0.0f });
 	ga_oobb rPaddle_oobb;
-	rPaddle_oobb._half_vectors[0] = ga_vec3f::x_vector().scale_result(0.3f);
-	rPaddle_oobb._half_vectors[1] = ga_vec3f::y_vector().scale_result(3.0f);
+	rPaddle_oobb._half_vectors[0] = ga_vec3f::x_vector().scale_result(-1.0f);// .scale_result(0.3f);
+	rPaddle_oobb._half_vectors[1] = ga_vec3f::y_vector().scale_result(4.0f);
 	rPaddle_oobb._half_vectors[2] = ga_vec3f::z_vector().scale_result(0.3f);
 	ga_physics_component rPaddle_collider(&rPaddle, &rPaddle_oobb, 2.0f);
 	rPaddle_collider.get_rigid_body()->make_weightless();
+	rPaddle_collider.get_rigid_body()->make_static();
+	rPaddle.add_component(&rPaddle_collider);
+
 	world->add_rigid_body(rPaddle_collider.get_rigid_body());
-	
 	sim->add_entity(&rPaddle);
 
 	//Left Paddle entity
 	ga_entity lPaddle;
-	lPaddle.translate({ -10.0f, 0.0f, 0.0f });
 	ga_lua_component lua_move_l(&lPaddle, "data/scripts/movePaddleL.lua");
 	ga_cube_component model_l(&lPaddle, "data/textures/rpi.png");
+	lPaddle.translate({ -12.0f, 0.0f, 0.0f });
+	ga_oobb lPaddle_oobb;
+	lPaddle_oobb._half_vectors[0] = ga_vec3f::x_vector();// .scale_result(0.3f);
+	lPaddle_oobb._half_vectors[1] = ga_vec3f::y_vector().scale_result(4.0f);
+	lPaddle_oobb._half_vectors[2] = ga_vec3f::z_vector().scale_result(0.3f);
+	ga_physics_component lPaddle_collider(&lPaddle, &lPaddle_oobb, 2.0f);
+	lPaddle_collider.get_rigid_body()->make_weightless();
+	lPaddle_collider.get_rigid_body()->make_static();
+	lPaddle.add_component(&lPaddle_collider);
+	world->add_rigid_body(lPaddle_collider.get_rigid_body());
 	sim->add_entity(&lPaddle);
+
+	//ball entity
+	ga_entity test_1_box;
+	test_1_box.translate({ 0.0f, 0.0f, 0.0f });
+	ga_ball_component model_b(&test_1_box, "data/textures/rpi.png");
+	ga_oobb test_1_oobb;
+	test_1_oobb._half_vectors[0] = ga_vec3f::x_vector().scale_result(0.3f);
+	test_1_oobb._half_vectors[1] = ga_vec3f::y_vector().scale_result(0.3f);
+	test_1_oobb._half_vectors[2] = ga_vec3f::z_vector().scale_result(0.3f);
+
+	ga_physics_component test_1_collider(&test_1_box, &test_1_oobb, 1.0f);
+	test_1_collider.get_rigid_body()->make_weightless();
+	
+	world->add_rigid_body(test_1_collider.get_rigid_body());
+	sim->add_entity(&test_1_box);
+
+	test_1_collider.get_rigid_body()->add_linear_velocity({ 10.0f, 0.0f, 0.0f });
 
 	//floor collider
 	ga_entity floor;
@@ -100,8 +126,8 @@ int main(int argc, const char** argv)
 	floor.set_transform(tempscale3);
 	ga_physics_component floor_collider(&floor, &floor_plane, 0.0f);
 	floor_collider.get_rigid_body()->make_static();
-	world->add_rigid_body(floor_collider.get_rigid_body());
-	sim->add_entity(&floor);
+	//world->add_rigid_body(floor_collider.get_rigid_body());
+	//sim->add_entity(&floor);
 
 	//ceiling collider
 	ga_entity ceil;
@@ -114,8 +140,8 @@ int main(int argc, const char** argv)
 	ceil.set_transform(tempscale4);
 	ga_physics_component ceil_collider(&ceil, &ceil_plane, 0.0f);
 	ceil_collider.get_rigid_body()->make_static();
-	world->add_rigid_body(ceil_collider.get_rigid_body());
-	sim->add_entity(&ceil);
+	//world->add_rigid_body(ceil_collider.get_rigid_body());
+	//sim->add_entity(&ceil);
 
 	// Main loop:
 	while (true)
@@ -145,9 +171,9 @@ int main(int argc, const char** argv)
 		output->update(&params);
 	}
 
-	world->remove_rigid_body(floor_collider.get_rigid_body());
-	//world->remove_rigid_body(rPaddle_collider.get_rigid_body());
-	world->remove_rigid_body(ceil_collider.get_rigid_body());
+	//world->remove_rigid_body(floor_collider.get_rigid_body());
+	world->remove_rigid_body(rPaddle_collider.get_rigid_body());
+	//world->remove_rigid_body(ceil_collider.get_rigid_body());
 
 	delete output;
 	delete sim;

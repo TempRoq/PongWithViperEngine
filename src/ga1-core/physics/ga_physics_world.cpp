@@ -197,7 +197,8 @@ void ga_physics_world::step_angular_dynamics(ga_frame_params* params, ga_rigid_b
 
 void ga_physics_world::resolve_collision(ga_rigid_body* body_a, ga_rigid_body* body_b, ga_collision_info* info)
 {
-	// Calculate the velocities of A and B at the point of collision.
+	//From Viper
+	/*// Calculate the velocities of A and B at the point of collision.
 	ga_vec3f r_ap = body_a->_shape->get_offset_to_point(body_a->_transform, info->_point);
 	ga_vec3f r_bp = body_b->_shape->get_offset_to_point(body_b->_transform, info->_point);
 
@@ -269,5 +270,60 @@ void ga_physics_world::resolve_collision(ga_rigid_body* body_a, ga_rigid_body* b
 	{
 		body_b->_velocity -= impulse.scale_result(1.0f / body_b->_mass);
 		body_b->_angular_momentum += body_b->_inertia_tensor.inverse().transform_vector(ga_vec3f_cross(impulse, r_bp));
+	}*/
+
+	//From HW
+	// First move the objects so they no longer intersect.
+	// Each object will be moved proportionally to their incoming velocities.
+	// If an object is static, it won't be moved.
+	float total_velocity = body_a->_velocity.mag() + body_b->_velocity.mag();
+	float percentage_a = (body_a->_flags & k_static) ? 0.0f : body_a->_velocity.mag() / total_velocity;
+	float percentage_b = (body_b->_flags & k_static) ? 0.0f : body_b->_velocity.mag() / total_velocity;
+
+	// To avoid instability, nudge the two objects slightly farther apart.
+	const float k_nudge = 0.001f;
+	if ((body_a->_flags & k_static) == 0 && body_a->_velocity.mag2() > 0.0f)
+	{
+		float pen_a = info->_penetration * percentage_a + k_nudge;
+		body_a->_transform.set_translation(body_a->_transform.get_translation() - body_a->_velocity.normal().scale_result(pen_a));
+	}
+	if ((body_b->_flags & k_static) == 0 && body_b->_velocity.mag2() > 0.0f)
+	{
+		float pen_b = info->_penetration * percentage_b + k_nudge;
+		body_b->_transform.set_translation(body_b->_transform.get_translation() - body_b->_velocity.normal().scale_result(pen_b));
+	}
+
+	// Average the coefficients of restitution.
+	float cor_average = (body_a->_coefficient_of_restitution + body_b->_coefficient_of_restitution) / 2.0f;
+
+	// TODO: Homework 5.
+	// First, calculate the impulse j from the collision of body_a and body_b.
+	// The parameter info contains the collision normal.
+	// The rigid bodies' velocities should then be updated to their new values after the impulse is applied.
+
+	ga_vec3f impulse = ga_vec3f::zero_vector();
+
+	if ((body_a->_flags & k_static) == 1)
+	{
+		ga_vec3f v = body_b->_velocity - (info->_normal.scale_result(body_b->_velocity.dot(info->_normal) * (body_b->_coefficient_of_restitution + 1.0f)));
+		body_b->_velocity = v;
+	}
+	else if ((body_b->_flags & k_static) == 1)
+	{
+		ga_vec3f v = body_a->_velocity - (info->_normal.scale_result(body_a->_velocity.dot(info->_normal) * (body_a->_coefficient_of_restitution + 1.0f)));
+		body_a->_velocity = v;
+	}
+	else
+	{
+		float pa = body_a->_velocity.dot(info->_normal) * (cor_average + 1.0f);
+		float pb = body_b->_velocity.dot(info->_normal) * (cor_average + 1.0f);
+		float pm = (1.0f / body_a->_mass) + (1.0f / body_b->_mass);
+		float pHat = (pa - pb) / pm;
+
+		ga_vec3f va = body_a->_velocity + info->_normal.scale_result(pHat / body_a->_mass);
+		ga_vec3f vb = body_b->_velocity - info->_normal.scale_result(pHat / body_b->_mass);
+
+		body_a->_velocity = -va;
+		body_b->_velocity = vb;
 	}
 }
