@@ -139,3 +139,17 @@ int ga_lua_component::lua_entity_translate(lua_State* state)
 
 	return 0;
 }
+
+int ga_lua_component::lua_entity_set_velocity(lua_State* state) {
+	int arg_count = lua_gettop(state);
+
+	ga_entity* ent = (ga_entity*)lua_touserdata(state, 1);
+
+	ga_vec3f vec;
+	vec.x = (float)lua_tonumber(state, 2);
+	vec.y = (float)lua_tonumber(state, 3);
+	vec.z = (float)lua_tonumber(state, 4);
+
+	ent->get_physics_component()->get_rigid_body()->set_linear_velocity(vec);
+	return 0;
+}

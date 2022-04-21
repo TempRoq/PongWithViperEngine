@@ -9,6 +9,8 @@
 
 #include "ga_entity.h"
 #include "ga_component.h"
+#include <typeinfo>
+
 
 ga_entity::ga_entity()
 {
@@ -51,3 +53,13 @@ void ga_entity::rotate(const ga_quatf& rotation)
 	rotation_m.make_rotation(rotation);
 	_transform = rotation_m * _transform;
 }
+
+const ga_component* ga_entity::get_component(const char* name) {
+	for (int i = 0; i < _components.size(); i++) {
+		if (name == typeid(_components[i]).name()) {
+			return _components[i];
+		}
+	}
+	return nullptr;
+}
+

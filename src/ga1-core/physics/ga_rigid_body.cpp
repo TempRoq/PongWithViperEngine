@@ -46,3 +46,7 @@ void ga_rigid_body::add_angular_momentum(const ga_vec3f& v)
 {
 	_angular_momentum += v;
 }
+
+void ga_rigid_body::set_linear_velocity(const ga_vec3f& v) {
+	_velocity = v;
+}

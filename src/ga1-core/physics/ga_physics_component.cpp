@@ -18,6 +18,7 @@ ga_physics_component::ga_physics_component(ga_entity* ent, ga_shape* shape, floa
 {
 	_body = new ga_rigid_body(shape, mass);
 	_body->_transform = ent->get_transform();
+	ent->set_physics_component(this);
 }
 
 ga_physics_component::~ga_physics_component()

@@ -31,6 +31,7 @@ private:
 	static int lua_frame_params_get_input_down_L(struct lua_State* state);
 	static int lua_component_get_entity(struct lua_State* state);
 	static int lua_entity_translate(struct lua_State* state);
+	static int lua_entity_set_velocity(struct lua_State* state);
 
 	struct lua_State* _lua;
 };

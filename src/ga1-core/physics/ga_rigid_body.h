@@ -38,6 +38,7 @@ public:
 
 	void add_linear_velocity(const ga_vec3f& v);
 	void add_angular_momentum(const ga_vec3f& v);
+	void set_linear_velocity(const ga_vec3f& v);
 
 private:
 	ga_mat4f _transform;

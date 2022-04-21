@@ -35,8 +35,14 @@ public:
 
 	const ga_mat4f& get_transform() const { return _transform; }
 	void set_transform(const ga_mat4f& t) { _transform = t; }
-
+	const ga_component* get_component(const char* name);
+	ga_physics_component* get_physics_component(){ return physComponent; }
 private:
 	std::vector<class ga_component*> _components;
+	class ga_physics_component* physComponent;
 	ga_mat4f _transform;
+	void set_physics_component(ga_physics_component* p) {physComponent = p;}
+
+	friend class ga_component;
+	friend class ga_physics_component;
 };
