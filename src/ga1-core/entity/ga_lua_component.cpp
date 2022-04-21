@@ -11,6 +11,7 @@
 
 #include "entity/ga_entity.h"
 #include "framework/ga_frame_params.h"
+#include "physics/ga_rigid_body.h"
 
 #include <lua.hpp>
 
@@ -42,6 +43,7 @@ ga_lua_component::ga_lua_component(ga_entity* ent, const char* path) : ga_compon
 	lua_register(_lua, "frame_params_get_input_down_L", lua_frame_params_get_input_down_L);
 	lua_register(_lua, "component_get_entity", lua_component_get_entity);
 	lua_register(_lua, "entity_translate", lua_entity_translate);
+	lua_register(_lua, "entity_set_velocity", lua_entity_set_velocity);
 	lua_pcall(_lua, 0, 0, 0);
 
 }
