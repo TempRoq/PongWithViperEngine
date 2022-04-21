@@ -7,7 +7,7 @@
 ** This file is distributed under the MIT License. See LICENSE.txt.
 */
 
-#include "ga_cube_component.h"
+#include "ga_ball_component.h"
 #include "ga_material.h"
 
 #include "entity/ga_entity.h"
@@ -15,7 +15,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-ga_cube_component::ga_cube_component(ga_entity* ent, const char* texture_file) : ga_component(ent)
+ga_ball_component::ga_ball_component(ga_entity* ent, const char* texture_file) : ga_component(ent)
 {
 	_material = new ga_unlit_texture_material(texture_file);
 	_material->init();
@@ -166,7 +166,7 @@ ga_cube_component::ga_cube_component(ga_entity* ent, const char* texture_file) :
 	glBindVertexArray(0);
 }
 
-ga_cube_component::~ga_cube_component()
+ga_ball_component::~ga_ball_component()
 {
 	glDeleteBuffers(4, _vbos);
 	glDeleteVertexArrays(1, &_vao);
@@ -174,7 +174,7 @@ ga_cube_component::~ga_cube_component()
 	delete _material;
 }
 
-void ga_cube_component::update(ga_frame_params* params)
+void ga_ball_component::update(ga_frame_params* params)
 {
 	float dt = std::chrono::duration_cast<std::chrono::duration<float>>(params->_delta_time).count();
 	ga_quatf axis_angle;
@@ -182,7 +182,7 @@ void ga_cube_component::update(ga_frame_params* params)
 	//get_entity()->rotate(axis_angle);
 
 	ga_static_drawcall draw;
-	draw._name = "ga_cube_component";
+	draw._name = "ga_ball_component";
 	draw._vao = _vao;
 	draw._index_count = _index_count;
 	draw._transform = get_entity()->get_transform();

@@ -66,22 +66,27 @@ int main(int argc, const char** argv)
 	// Create an entity whose movement is driven by Lua script.
 	//Right Paddle entity
 	ga_entity rPaddle;
-	rPaddle.translate({ 20.0f, 0.0f, 0.0f });
+	
 	ga_lua_component lua_move_r(&rPaddle, "data/scripts/movePaddleR.lua");
 	ga_cube_component model_r(&rPaddle, "data/textures/rpi.png");
-	ga_mat4f tempscale = rPaddle.get_transform();
-	tempscale.nonuniform_scale({ 0.5f, 5.0f, 0.5f });
-	rPaddle.set_transform(tempscale);
+	
+	rPaddle.translate({ 10.0f, 0.0f, 0.0f });
+
+	ga_oobb rPaddle_oobb;
+	rPaddle_oobb._half_vectors[0] = ga_vec3f::x_vector().scale_result(0.3f);
+	rPaddle_oobb._half_vectors[1] = ga_vec3f::y_vector().scale_result(3.0f);
+	rPaddle_oobb._half_vectors[2] = ga_vec3f::z_vector().scale_result(0.3f);
+	ga_physics_component rPaddle_collider(&rPaddle, &rPaddle_oobb, 2.0f);
+	rPaddle_collider.get_rigid_body()->make_weightless();
+	world->add_rigid_body(rPaddle_collider.get_rigid_body());
+	
 	sim->add_entity(&rPaddle);
 
 	//Left Paddle entity
 	ga_entity lPaddle;
-	lPaddle.translate({ -20.0f, 0.0f, 0.0f });
+	lPaddle.translate({ -10.0f, 0.0f, 0.0f });
 	ga_lua_component lua_move_l(&lPaddle, "data/scripts/movePaddleL.lua");
 	ga_cube_component model_l(&lPaddle, "data/textures/rpi.png");
-	ga_mat4f tempscale2 = lPaddle.get_transform();
-	tempscale2.nonuniform_scale({ 0.5f, 5.0f, 0.5f });
-	lPaddle.set_transform(tempscale2);
 	sim->add_entity(&lPaddle);
 
 	//floor collider
@@ -89,10 +94,28 @@ int main(int argc, const char** argv)
 	ga_plane floor_plane;
 	floor_plane._point = { 0.0f, 0.0f, 0.0f };
 	floor_plane._normal = { 0.0f, 1.0f, 0.0f };
+	floor.translate({ 0.0f, -7.0f, 0.0f });
+	ga_mat4f tempscale3 = floor.get_transform();
+	tempscale3.nonuniform_scale({ 1.3f, 1.0f, 0.1f });
+	floor.set_transform(tempscale3);
 	ga_physics_component floor_collider(&floor, &floor_plane, 0.0f);
 	floor_collider.get_rigid_body()->make_static();
 	world->add_rigid_body(floor_collider.get_rigid_body());
 	sim->add_entity(&floor);
+
+	//ceiling collider
+	ga_entity ceil;
+	ga_plane ceil_plane;
+	ceil_plane._point = { 0.0f, 0.0f, 0.0f };
+	ceil_plane._normal = { 0.0f, 1.0f, 0.0f };
+	ceil.translate({ 0.0f, 7.0f, 0.0f });
+	ga_mat4f tempscale4 = ceil.get_transform();
+	tempscale4.nonuniform_scale({ 1.3f, 1.0f, 0.1f });
+	ceil.set_transform(tempscale4);
+	ga_physics_component ceil_collider(&ceil, &ceil_plane, 0.0f);
+	ceil_collider.get_rigid_body()->make_static();
+	world->add_rigid_body(ceil_collider.get_rigid_body());
+	sim->add_entity(&ceil);
 
 	// Main loop:
 	while (true)
@@ -123,6 +146,8 @@ int main(int argc, const char** argv)
 	}
 
 	world->remove_rigid_body(floor_collider.get_rigid_body());
+	//world->remove_rigid_body(rPaddle_collider.get_rigid_body());
+	world->remove_rigid_body(ceil_collider.get_rigid_body());
 
 	delete output;
 	delete sim;

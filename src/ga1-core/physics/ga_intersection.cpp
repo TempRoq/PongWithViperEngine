@@ -78,7 +78,7 @@ ga_vec3f farthest_along_vector(const std::vector<ga_vec3f>& points, const ga_vec
 
 bool intersection_unimplemented(const ga_shape* a, const ga_mat4f& transform_a, const ga_shape* b, const ga_mat4f& transform_b, ga_collision_info* info)
 {
-	assert(false);
+	//assert(false);
 	return false;
 }
 
