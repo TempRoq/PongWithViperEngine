@@ -63,3 +63,8 @@ const ga_component* ga_entity::get_component(const char* name) {
 	return nullptr;
 }
 
+const ga_physics_component* ga_entity::get_physics_component()
+{
+	return physComponent;
+}
+

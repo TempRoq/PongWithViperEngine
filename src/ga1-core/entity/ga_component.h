@@ -10,7 +10,6 @@
 */
 
 #include "framework/ga_frame_params.h"
-#include <string>
 
 /*
 ** Base class component object.
@@ -32,5 +31,4 @@ public:
 
 private:
 	class ga_entity* _entity;
-	const string name;
 };
