@@ -1,3 +1,4 @@
+#pragma once
 #include "ga_pong_manager.h"
 
 ga_pong_manager::ga_pong_manager(class ga_entity* ent, ga_entity* left, ga_entity* right, ga_entity* _ball, int maxPoints){
@@ -8,13 +9,13 @@ ga_pong_manager::ga_pong_manager(class ga_entity* ent, ga_entity* left, ga_entit
 	ball = _ball;
 	
 	if (maxPoints <= 0) {
-		pointsToWin = 1;
+		points_to_win = 1;
 	}
 	else {
-		pointsToWin = maxPoints;
+		points_to_win = maxPoints;
 	}
-	leftScore = 0;
-	rightScore = 0;
+	left_score = 0;
+	right_score = 0;
 	
 }
 
@@ -22,23 +23,23 @@ ga_pong_manager::~ga_pong_manager() {
 	~ga_component();
 }
 
-ga_pong_manager::ScorePoint(bool left) {
+void ga_pong_manager::ScorePoint(bool left) {
 	if (left) {
-		leftScore++;
-		if (leftScore == pointsToWin) {
-			EndGame();
+		left_score++;
+		if (left_score == points_to_win) {
+			end_game();
 		}
 	}
 	else {
-		rightScore++;
-		if (rightScore == pointsToWin) {
-			EndGame();
+		right_score++;
+		if (right_score == points_to_win) {
+			end_game();
 		}
 	}
 }
 
-ga_pong_manager::EndGame() {
-	if (leftScore == pointsToWin) {
+void ga_pong_manager::end_game()
+{if (left_score == points_to_win) {
 		//Left Wins;
 	}
 	else {
@@ -46,6 +47,12 @@ ga_pong_manager::EndGame() {
 	}
 }
 
-ga_pong_manager::MoveBallToPoint(ga_vec3f loc) {
-	ball->translate(loc);
+
+
+void ga_pong_manager::reset_ball() {
+	ga_vec3f position;
+	position.x = 0;
+	position.y = 0;
+	position.z = 0;
+	ball->translate(position);
 }

@@ -48,6 +48,7 @@ ga_lua_component::ga_lua_component(ga_entity* ent, const char* path) : ga_compon
 
 }
 
+
 ga_lua_component::~ga_lua_component()
 {
 	if (_lua)
@@ -125,6 +126,13 @@ int ga_lua_component::lua_component_get_entity(lua_State* state)
 
 	return 1;
 }
+
+float ga_lua_component::lua_frame_params_get_stick_input_L(lua_State* state) {
+	int arg_count = lua_gettop(state);
+	ga_lua_component* component = (ga_lua_component*)lua_touserdata(state, 1);
+	ga_entity* entity = component->get_entity();
+}
+
 
 int ga_lua_component::lua_entity_translate(lua_State* state)
 {
